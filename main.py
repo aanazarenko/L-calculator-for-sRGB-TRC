@@ -80,6 +80,16 @@ def stat(int_level__ICCv2, int_level__ICCv4, bit_depth):
 ######## Input RGB level for ---> 8 <--- bit per channel
 
 stat(
+    int_level__ICCv2 = 124, # 20% Image surround reflectance, because its linear value is 0.20156 (ICC v2)
+    int_level__ICCv4 = 123, # 20% Image surround reflectance, because its linear value is 0.20007 (ICC v4)
+    bit_depth = 8
+)
+
+###
+
+######## Input RGB level for ---> 8 <--- bit per channel
+
+stat(
     int_level__ICCv2 = 118, # 18% gray card, because its linear value is 0.18116 (ICC v2)
     int_level__ICCv4 = 117, # 18% gray card, because its linear value is 0.17994 (ICC v4)
     bit_depth = 8
