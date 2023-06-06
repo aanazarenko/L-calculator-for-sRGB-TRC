@@ -38,52 +38,45 @@ def calculate_Lstar_value_gray(linear_level_gray):
     return L_star
 
 
+
+def stat(int_level__ICCv2, int_level__ICCv4, bit_depth):
+
+    NORMALIZED_LEVEL__ICCv2 = int_level__ICCv2 / (pow(2, bit_depth) - 1)
+    print("for int_level   {}/ {} normalized level in range [0..1]: {:.5f} (ICC v2)".format(int_level__ICCv2, bit_depth, NORMALIZED_LEVEL__ICCv2))
+    
+    NORMALIZED_LEVEL__ICCv4 = int_level__ICCv4 / (pow(2, bit_depth) - 1)
+    print("for int_level   {}/ {} normalized level in range [0..1]: {:.5f} (ICC v4)".format(int_level__ICCv4, bit_depth, NORMALIZED_LEVEL__ICCv4))
+    
+    LINEAR_VALUE__ICCv2 = calculate_linear_value_ICCv2(NORMALIZED_LEVEL__ICCv2)
+    print("for int_level   {}/ {} linear value in range [0..1]: {:.5f} (ICC v2)".format(int_level__ICCv2, bit_depth, LINEAR_VALUE__ICCv2))
+    
+    LINEAR_VALUE__ICCv4 = calculate_linear_value_ICCv4(NORMALIZED_LEVEL__ICCv4)
+    print("for int_level   {}/ {} linear value in range [0..1]: {:.5f} (ICC v4)".format(int_level__ICCv4, bit_depth, LINEAR_VALUE__ICCv4))
+    
+    L_STAR_VALUE__ICCv2 = calculate_Lstar_value_gray(LINEAR_VALUE__ICCv2)
+    print("for int_level   {}/ {} L* value in range [0..100]: {:.2f} (ICC v2)".format(int_level__ICCv2, bit_depth, L_STAR_VALUE__ICCv2))
+    
+    L_STAR_VALUE__ICCv4 = calculate_Lstar_value_gray(LINEAR_VALUE__ICCv4)
+    print("for int_level   {}/ {} L* value in range [0..100]: {:.2f} (ICC v4)".format(int_level__ICCv4, bit_depth, L_STAR_VALUE__ICCv4))
+    
+
 ######## Input RGB level for ---> 8 <--- bit per channel
-INT_LEVEL__ICCv2__8bit = 118 # 18% gray card, because its linear value is 0.18116 (ICC v2)
-INT_LEVEL__ICCv4__8bit = 117 # 18% gray card, because its linear value is 0.17994 (ICC v4)
-###
 
-NORMALIZED_LEVEL__ICCv2__8bit = INT_LEVEL__ICCv2__8bit / (pow(2, 8) - 1)
-print("for int_level   {}/ {} normalized level in range [0..1]: {:.5f} (ICC v2)".format(INT_LEVEL__ICCv2__8bit, 8, NORMALIZED_LEVEL__ICCv2__8bit))
-
-NORMALIZED_LEVEL__ICCv4__8bit = INT_LEVEL__ICCv4__8bit / (pow(2, 8) - 1)
-print("for int_level   {}/ {} normalized level in range [0..1]: {:.5f} (ICC v4)".format(INT_LEVEL__ICCv4__8bit, 8, NORMALIZED_LEVEL__ICCv4__8bit))
-
-LINEAR_VALUE__ICCv2__8bit = calculate_linear_value_ICCv2(NORMALIZED_LEVEL__ICCv2__8bit)
-print("for int_level   {}/ {} linear value in range [0..1]: {:.5f} (ICC v2)".format(INT_LEVEL__ICCv2__8bit, 8, LINEAR_VALUE__ICCv2__8bit))
-
-LINEAR_VALUE__ICCv4__8bit = calculate_linear_value_ICCv4(NORMALIZED_LEVEL__ICCv4__8bit)
-print("for int_level   {}/ {} linear value in range [0..1]: {:.5f} (ICC v4)".format(INT_LEVEL__ICCv4__8bit, 8, LINEAR_VALUE__ICCv4__8bit))
-
-L_STAR_VALUE__ICCv2__8bit = calculate_Lstar_value_gray(LINEAR_VALUE__ICCv2__8bit)
-print("for int_level   {}/ {} L* value in range [0..100]: {:.2f} (ICC v2)".format(INT_LEVEL__ICCv2__8bit, 8, L_STAR_VALUE__ICCv2__8bit))
-
-L_STAR_VALUE__ICCv4__8bit = calculate_Lstar_value_gray(LINEAR_VALUE__ICCv4__8bit)
-print("for int_level   {}/ {} L* value in range [0..100]: {:.2f} (ICC v4)".format(INT_LEVEL__ICCv4__8bit, 8, L_STAR_VALUE__ICCv4__8bit))
+stat(
+    int_level__ICCv2 = 118, # 18% gray card, because its linear value is 0.18116 (ICC v2)
+    int_level__ICCv4 = 117, # 18% gray card, because its linear value is 0.17994 (ICC v4)
+    bit_depth = 8
+)
 
 ###
 
 
 ######## Input RGB level for ---> 16 <--- bit per channel
-INT_LEVEL__ICCv2__16bit = 30235 # 18% gray card, because its linear value is 0.18000 (ICC v2)
-INT_LEVEL__ICCv4__16bit = 30074 # 18% gray card, because its linear value is 0.18001 (ICC v4)
 
-NORMALIZED_LEVEL__ICCv2__16bit = INT_LEVEL__ICCv2__16bit / (pow(2, 16) - 1)
-print("for int_level {}/{} normalized level in range [0..1]: {:.5f} (ICC v2)".format(INT_LEVEL__ICCv2__16bit, 16, NORMALIZED_LEVEL__ICCv2__16bit))
-
-NORMALIZED_LEVEL__ICCv4__16bit = INT_LEVEL__ICCv4__16bit / (pow(2, 16) - 1)
-print("for int_level {}/{} normalized level in range [0..1]: {:.5f} (ICC v4)".format(INT_LEVEL__ICCv4__16bit, 16, NORMALIZED_LEVEL__ICCv4__16bit))
-
-LINEAR_VALUE_ICCv2__16bit = calculate_linear_value_ICCv2(NORMALIZED_LEVEL__ICCv2__16bit)
-print("for int_level {}/{} linear value in range [0..1]: {:.5f} (ICC v2)".format(INT_LEVEL__ICCv2__16bit, 16, LINEAR_VALUE_ICCv2__16bit))
-
-LINEAR_VALUE_ICCv4__16bit = calculate_linear_value_ICCv4(NORMALIZED_LEVEL__ICCv4__16bit)
-print("for int_level {}/{} linear value in range [0..1]: {:.5f} (ICC v4)".format(INT_LEVEL__ICCv4__16bit, 16, LINEAR_VALUE_ICCv4__16bit))
-
-L_STAR_VALUE_ICCv2__16bit = calculate_Lstar_value_gray(LINEAR_VALUE_ICCv2__16bit)
-print("for int_level {}/{} L* value in range [0..100]: {:.2f} (ICC v2)".format(INT_LEVEL__ICCv2__16bit, 16, L_STAR_VALUE_ICCv2__16bit))
-
-L_STAR_VALUE_ICCv4__16bit = calculate_Lstar_value_gray(LINEAR_VALUE_ICCv4__16bit)
-print("for int_level {}/{} L* value in range [0..100]: {:.2f} (ICC v4)".format(INT_LEVEL__ICCv4__16bit, 16, L_STAR_VALUE_ICCv4__16bit))
+stat(
+    int_level__ICCv2 = 30235, # 18% gray card, because its linear value is 0.18000 (ICC v2)
+    int_level__ICCv4 = 30074, # 18% gray card, because its linear value is 0.18001 (ICC v4)
+    bit_depth = 16
+)
 
 ###
