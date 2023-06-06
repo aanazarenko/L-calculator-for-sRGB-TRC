@@ -44,4 +44,3 @@ L_star_ICCv2_8bit = calculate_Lstar_gray(linear_level_ICCv2_8bit)
 
 print("for int_level {}/{} L* value in range [0..100]: {:.2f} (ICC v2)".format(int_level_8bit, 8, L_star_ICCv2_8bit))
 ###
-
