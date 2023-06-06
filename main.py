@@ -12,6 +12,16 @@ def calculate_linear_value_ICCv2(normalized_level):
     return linear_value
 
 
+def calculate_linear_value_ICCv2_precise(normalized_level):
+
+    if normalized_level <= 0.0392857:
+        linear_value = normalized_level / 12.9232102
+    else:
+        linear_value = pow(((normalized_level + 0.055) / 1.055), 2.4)
+
+    return linear_value
+
+
 def calculate_linear_value_ICCv4(normalized_level):
 
     if normalized_level <= 0.04045:
@@ -51,6 +61,9 @@ def stat(int_level__ICCv2, int_level__ICCv4, bit_depth):
     
     LINEAR_VALUE__ICCv2 = calculate_linear_value_ICCv2(NORMALIZED_LEVEL__ICCv2)
     print((SUBSTR + "linear value in range [0..1]: {:.5f} (ICC v2)").format(int_level__ICCv2, bit_depth, LINEAR_VALUE__ICCv2))
+
+    LINEAR_VALUE__ICCv2_precise = calculate_linear_value_ICCv2_precise(NORMALIZED_LEVEL__ICCv2)
+    print((SUBSTR + "linear value in range [0..1]: {:.5f} (ICC v2 precise)").format(int_level__ICCv2, bit_depth, LINEAR_VALUE__ICCv2_precise))
     
     LINEAR_VALUE__ICCv4 = calculate_linear_value_ICCv4(NORMALIZED_LEVEL__ICCv4)
     print((SUBSTR + "linear value in range [0..1]: {:.5f} (ICC v4)").format(int_level__ICCv4, bit_depth, LINEAR_VALUE__ICCv4))
