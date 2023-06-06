@@ -60,6 +60,8 @@ def stat(int_level__ICCv2, int_level__ICCv4, bit_depth):
     
     L_STAR_VALUE__ICCv4 = calculate_Lstar_value_gray(LINEAR_VALUE__ICCv4)
     print((SUBSTR + "L* value in range [0..100]: {:.2f} (ICC v4)").format(int_level__ICCv4, bit_depth, L_STAR_VALUE__ICCv4))
+
+    print()
     
 
 ######## Input RGB level for ---> 8 <--- bit per channel
@@ -71,6 +73,14 @@ stat(
 )
 
 ###
+
+######## Input RGB level for ---> 15 <--- bit per channel
+
+stat(
+    int_level__ICCv2 = 15117, # 18% gray card, because its linear value is 0.17999 (ICC v2)
+    int_level__ICCv4 = 15037, # 18% gray card, because its linear value is 0.18001 (ICC v4)
+    bit_depth = 15
+)
 
 
 ######## Input RGB level for ---> 16 <--- bit per channel
