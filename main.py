@@ -1,3 +1,7 @@
+#######
+# All calculations are from https://www.color.org/sRGB.pdf doc
+###
+
 def calculate_linear_value_ICCv2(normalized_level):
 
     if normalized_level <= 0.04045:
