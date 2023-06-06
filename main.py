@@ -41,23 +41,25 @@ def calculate_Lstar_value_gray(linear_level_gray):
 
 def stat(int_level__ICCv2, int_level__ICCv4, bit_depth):
 
+    SUBSTR = "for input integer RGB level {:5d} /{:2d} "
+
     NORMALIZED_LEVEL__ICCv2 = int_level__ICCv2 / (pow(2, bit_depth) - 1)
-    print("for int_level   {}/ {} normalized level in range [0..1]: {:.5f} (ICC v2)".format(int_level__ICCv2, bit_depth, NORMALIZED_LEVEL__ICCv2))
+    print((SUBSTR + "normalized level in range [0..1]: {:.5f} (ICC v2)").format(int_level__ICCv2, bit_depth, NORMALIZED_LEVEL__ICCv2))
     
     NORMALIZED_LEVEL__ICCv4 = int_level__ICCv4 / (pow(2, bit_depth) - 1)
-    print("for int_level   {}/ {} normalized level in range [0..1]: {:.5f} (ICC v4)".format(int_level__ICCv4, bit_depth, NORMALIZED_LEVEL__ICCv4))
+    print((SUBSTR + "normalized level in range [0..1]: {:.5f} (ICC v4)").format(int_level__ICCv4, bit_depth, NORMALIZED_LEVEL__ICCv4))
     
     LINEAR_VALUE__ICCv2 = calculate_linear_value_ICCv2(NORMALIZED_LEVEL__ICCv2)
-    print("for int_level   {}/ {} linear value in range [0..1]: {:.5f} (ICC v2)".format(int_level__ICCv2, bit_depth, LINEAR_VALUE__ICCv2))
+    print((SUBSTR + "linear value in range [0..1]: {:.5f} (ICC v2)").format(int_level__ICCv2, bit_depth, LINEAR_VALUE__ICCv2))
     
     LINEAR_VALUE__ICCv4 = calculate_linear_value_ICCv4(NORMALIZED_LEVEL__ICCv4)
-    print("for int_level   {}/ {} linear value in range [0..1]: {:.5f} (ICC v4)".format(int_level__ICCv4, bit_depth, LINEAR_VALUE__ICCv4))
+    print((SUBSTR + "linear value in range [0..1]: {:.5f} (ICC v4)").format(int_level__ICCv4, bit_depth, LINEAR_VALUE__ICCv4))
     
     L_STAR_VALUE__ICCv2 = calculate_Lstar_value_gray(LINEAR_VALUE__ICCv2)
-    print("for int_level   {}/ {} L* value in range [0..100]: {:.2f} (ICC v2)".format(int_level__ICCv2, bit_depth, L_STAR_VALUE__ICCv2))
+    print((SUBSTR + "L* value in range [0..100]: {:.2f} (ICC v2)").format(int_level__ICCv2, bit_depth, L_STAR_VALUE__ICCv2))
     
     L_STAR_VALUE__ICCv4 = calculate_Lstar_value_gray(LINEAR_VALUE__ICCv4)
-    print("for int_level   {}/ {} L* value in range [0..100]: {:.2f} (ICC v4)".format(int_level__ICCv4, bit_depth, L_STAR_VALUE__ICCv4))
+    print((SUBSTR + "L* value in range [0..100]: {:.2f} (ICC v4)").format(int_level__ICCv4, bit_depth, L_STAR_VALUE__ICCv4))
     
 
 ######## Input RGB level for ---> 8 <--- bit per channel
