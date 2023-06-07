@@ -1,67 +1,44 @@
 import numpy as np
 
-#######
-# All calculations come from:
-# - https://www.color.org/sRGB.pdf doc
-# - https://www.wikiwand.com/en/CIELAB_color_space page
-###
+class LinearValueCalculator:
+    def calculate_linear_value(self, normalized_level):
+        pass
 
-def calculate_linear_value_ICCv2(normalized_level):
+    def get_short_name(self):
+        return self.__class__.__name__        
 
-    if normalized_level <= 0.04045:
-        linear_value = normalized_level / 12.92
-    else:
-        linear_value = ((normalized_level + 0.055) / 1.055) ** 2.4
+class ICCv2(LinearValueCalculator):
+    def calculate_linear_value(self, normalized_level):
+        if normalized_level <= 0.04045:
+            return normalized_level / 12.92
+        else:
+            return ((normalized_level + 0.055) / 1.055) ** 2.4
 
-    return linear_value
+class ICCv2_precise(LinearValueCalculator):
+    def calculate_linear_value(self, normalized_level):
+        if normalized_level <= 0.0392857:
+            return normalized_level / 12.9232102
+        else:
+            return ((normalized_level + 0.055) / 1.055) ** 2.4
 
+class ICCv4(LinearValueCalculator):
+    def calculate_linear_value(self, normalized_level):
+        if normalized_level <= 0.04045:
+            return 0.0772059 * normalized_level + 0.0025
+        else:
+            return (0.946879 * normalized_level + 0.0520784) ** 2.4 + 0.0025
 
-def calculate_linear_value_ICCv2_precise(normalized_level):
-
-    if normalized_level <= 0.0392857:
-        linear_value = normalized_level / 12.9232102
-    else:
-        linear_value = ((normalized_level + 0.055) / 1.055) ** 2.4
-
-    return linear_value
-
-
-def calculate_linear_value_ICCv4(normalized_level):
-
-    if normalized_level <= 0.04045:
-        linear_value = 0.0772059 * normalized_level + 0.0025
-    else:
-        linear_value = (0.946879 * normalized_level + 0.0520784) ** 2.4 + 0.0025
-
-    return linear_value
-
-
-# Convert linearRGB to XYZ
-R709_TO_XYZ_D65 = [
-    [0.4124564, 0.3575761, 0.1804375],
-    [0.2126729, 0.7151522, 0.0721750],
-    [0.0193339, 0.1191920, 0.9503041]
-]
-
-### ONLY for calculating monochrome!!!
 def calculate_Lstar_value_for_monochrome(linear_value):
+    R709_TO_XYZ_D65 = np.array([
+        [0.4124564, 0.3575761, 0.1804375],
+        [0.2126729, 0.7151522, 0.0721750],
+        [0.0193339, 0.1191920, 0.9503041]
+    ])
 
-    # Define the matrix and vector
-    matrix = np.array(R709_TO_XYZ_D65)
-    vector = np.array(
-        [
-            linear_value, 
-            linear_value, 
-            linear_value
-        ]
-    )
-    
-    # Multiply R709_TO_XYZ_D65 matrix by vector with linear_value
-    XYZ_D65 = np.dot(matrix, vector)    
-    
-    # Calculate L* value for D65
-    Yn = 1  # Reference white point
-    Y = XYZ_D65[1] #Y coordinate
+    XYZ_D65 = np.dot(R709_TO_XYZ_D65, [linear_value] * 3)
+
+    Yn = 1.0  # Reference white point
+    Y = XYZ_D65[1]  # Y coordinate
     Y_div_Yn = Y / Yn
 
     if Y_div_Yn > 0.008856:
@@ -71,82 +48,45 @@ def calculate_Lstar_value_for_monochrome(linear_value):
 
     return L_star
 
-
+ICCv2_CALC = ICCv2()
+ICCv2_precise_CALC = ICCv2_precise()
+ICCv4_CALC = ICCv4()
+ALL_CALCS = [ICCv2_CALC, ICCv2_precise_CALC, ICCv4_CALC]
 
 def stat(int_level__ICCv2, int_level__ICCv4, bit_depth):
+    int_levels = {
+        ICCv2_CALC: int_level__ICCv2,
+        ICCv2_precise_CALC: int_level__ICCv2,
+        ICCv4_CALC: int_level__ICCv4
+    }
 
-    SUBSTR = "for input integer RGB level {:5d} /{:2d} "
+    normalized_levels = {}
+    linear_values = {}
+    Lstar_values = {}
 
-    NORMALIZED_LEVEL__ICCv2 = int_level__ICCv2 / (pow(2, bit_depth) - 1)
-    print((SUBSTR + "normalized level in range [0..1]: {:.5f} (ICC v2)").format(int_level__ICCv2, bit_depth, NORMALIZED_LEVEL__ICCv2))
-    
-    NORMALIZED_LEVEL__ICCv4 = int_level__ICCv4 / (pow(2, bit_depth) - 1)
-    print((SUBSTR + "normalized level in range [0..1]: {:.5f} (ICC v4)").format(int_level__ICCv4, bit_depth, NORMALIZED_LEVEL__ICCv4))
-    
-    LINEAR_VALUE__ICCv2 = calculate_linear_value_ICCv2(NORMALIZED_LEVEL__ICCv2)
-    print((SUBSTR + "linear value in range [0..1]: {:.5f} (ICC v2)").format(int_level__ICCv2, bit_depth, LINEAR_VALUE__ICCv2))
+    for calc in ALL_CALCS:
+        normalized_levels[calc] = int_levels[calc] / (2 ** bit_depth - 1)
+        linear_values[calc] = calc.calculate_linear_value(normalized_levels[calc])
+        Lstar_values[calc] = calculate_Lstar_value_for_monochrome(linear_values[calc])
 
-    LINEAR_VALUE__ICCv2_precise = calculate_linear_value_ICCv2_precise(NORMALIZED_LEVEL__ICCv2)
-    print((SUBSTR + "linear value in range [0..1]: {:.5f} (ICC v2 precise)").format(int_level__ICCv2, bit_depth, LINEAR_VALUE__ICCv2_precise))
-    
-    LINEAR_VALUE__ICCv4 = calculate_linear_value_ICCv4(NORMALIZED_LEVEL__ICCv4)
-    print((SUBSTR + "linear value in range [0..1]: {:.5f} (ICC v4)").format(int_level__ICCv4, bit_depth, LINEAR_VALUE__ICCv4))
-    
-    L_STAR_VALUE__ICCv2 = calculate_Lstar_value_for_monochrome(LINEAR_VALUE__ICCv2)
-    print((SUBSTR + "L* value in range [0..100]: {:.2f} (ICC v2)").format(int_level__ICCv2, bit_depth, L_STAR_VALUE__ICCv2))
-    
-    L_STAR_VALUE__ICCv4 = calculate_Lstar_value_for_monochrome(LINEAR_VALUE__ICCv4)
-    print((SUBSTR + "L* value in range [0..100]: {:.2f} (ICC v4)").format(int_level__ICCv4, bit_depth, L_STAR_VALUE__ICCv4))
+    for calc in ALL_CALCS:
+        print(f"level {int_levels[calc]:5d} /{bit_depth:2d} normalized level in range [0..1]: {normalized_levels[calc]:0.5f} ({calc.get_short_name()})")
+
+    for calc in ALL_CALCS:
+        print(f"level {int_levels[calc]:5d} /{bit_depth:2d} linear value in range [0..1]: {linear_values[calc]:0.5f} ({calc.get_short_name()})")
+
+    for calc in ALL_CALCS:
+        print(f"level {int_levels[calc]:5d} /{bit_depth:2d} L* value in range [0..100]: {Lstar_values[calc]:0.2f} ({calc.get_short_name()})")
 
     print()
 
-
-stat(
-    int_level__ICCv2 = 1, # very dark color (ICC v2)
-    int_level__ICCv4 = 1, # very dark color (ICC v4)
-    bit_depth = 8
-)
-
-stat(
-    int_level__ICCv2 = 1, # very dark color (ICC v2)
-    int_level__ICCv4 = 1, # very dark color (ICC v4)
-    bit_depth = 16
-)
-
-stat(
-    int_level__ICCv2 = 2 ** 8 - 2, # brightess color (ICC v2)
-    int_level__ICCv4 = 2 ** 8 - 2, # brightess color (ICC v4)
-    bit_depth = 8
-)
-
-stat(
-    int_level__ICCv2 = 2 ** 16 - 2, # brightess color (ICC v2)
-    int_level__ICCv4 = 2 ** 16 - 2, # brightess color (ICC v4)
-    bit_depth = 16
-)
-
-stat(
-    int_level__ICCv2 = 124, # 20% Image surround reflectance, because its linear value is 0.20156 (ICC v2)
-    int_level__ICCv4 = 123, # 20% Image surround reflectance, because its linear value is 0.20007 (ICC v4)
-    bit_depth = 8
-)
-
-stat(
-    int_level__ICCv2 = 118, # 18% gray card, because its linear value is 0.18116 (ICC v2)
-    int_level__ICCv4 = 117, # 18% gray card, because its linear value is 0.17994 (ICC v4)
-    bit_depth = 8
-)
-
-stat(
-    int_level__ICCv2 = 15117, # 18% gray card, because its linear value is 0.17999 (ICC v2)
-    int_level__ICCv4 = 15037, # 18% gray card, because its linear value is 0.18001 (ICC v4)
-    bit_depth = 15
-)
-
-stat(
-    int_level__ICCv2 = 30235, # 18% gray card, because its linear value is 0.18000 (ICC v2)
-    int_level__ICCv4 = 30074, # 18% gray card, because its linear value is 0.18001 (ICC v4)
-    bit_depth = 16
-)
-
-###
+stat(0, 0, 8)  # BLACK - 8-bit
+stat(0, 0, 16)  # BLACK - 16-bit
+stat(1, 1, 8)  # very dark color - 8-bit
+stat(1, 1, 16)  # very dark color - 16-bit
+stat(2**8 - 2, 2**8 - 2, 8)  # brightness color - 8-bit
+stat(2**16 - 2, 2**16 - 2, 16)  # brightness color - 16-bit
+stat(124, 123, 8)  # 20% Image surround reflectance - 8-bit
+stat(118, 117, 8)  # 18% gray card - 8-bit
+stat(15117, 15037, 15)  # 18% gray card - 15-bit
+stat(30235, 30074, 16)  # 18% gray card - 16-bit
